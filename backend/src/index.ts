@@ -1,58 +1,53 @@
 import express from 'express';
-import { handleGetOperator } from './services/apiHandler';
-const app = express();
-const port = 3000;
+import { handleDeleteOperator, handleGetOperator, handleGetOperators, handlePostOperator, handlePutOperator } from './services/apiHandler';
+const app = express()
+const port = 3000
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
-  });
+    res.send('Hello World!')
+  });/* TODO remove */
 
 app.get('/operators', (req, res) => {
-    res.status(200).send(handleGetOperator())
+    const result = handleGetOperators()
+    res.status(200).send(result)
 });
 
-/* app.get('/operators/:id', (req: Request, res: Response) => {
-    const id = req.params.id;
-    console.log(`GET /operators/${id}`);
-    const operator = operators.find(op => op.id === id);
-    if (operator) {
-        res.json(operator);
-    } else {
-        res.status(404).json({ message: 'Operator not found' });
-    }
+app.get('/operators/:id', (req, res) => {
+    const id = req.params.id
+    const result = handleGetOperator(id)
+    res.status(200).send(result)
+    /* TODO 404 status for operator not found */
 });
 
-app.post('/operators', (req: Request, res: Response) => {
+app.post('/operators', (req, res) => {
     console.log('POST /operators');
-    const newOperator: IOperator = req.body;
-    operators.push(newOperator);
-    res.status(201).json(newOperator);
-});
-
-app.put('/operators/:id', (req: Request, res: Response) => {
-    const id = req.params.id;
-    console.log(`PUT /operators/${id}`);
-    const updatedOperator: IOperator = req.body;
-    const index = operators.findIndex(op => op.id === id);
-    if (index !== -1) {
-        operators[index] = updatedOperator;
-        res.json(updatedOperator);
+    const result = handlePostOperator(req.body)
+    if( result === 201) {
+        res.status(201).send("Operator created!");
     } else {
-        res.status(404).json({ message: 'Operator not found' });
+        res.status(500).send("SOmething wrong happened")
     }
 });
 
-app.delete('/operators/:id', (req: Request, res: Response) => {
-    const id = req.params.id;
-    console.log(`DELETE /operators/${id}`);
-    const index = operators.findIndex(op => op.id === id);
-    if (index !== -1) {
-        operators.splice(index, 1);
-        res.json({ message: 'Operator deleted' });
+app.put('/operators/:id', (req, res) => {
+    const id = req.params.id
+    const result = handlePutOperator(id, req.body)
+    if(result === 200) {
+        res.status(200).send("Operator modified!");
     } else {
-        res.status(404).json({ message: 'Operator not found' });
-    }
-}); */
+        res.status(500).send("SOmething wrong happened")
+    }/* TODO 404 status for operator not found */
+});
+
+app.delete('/operators/:id', (req, res) => {
+    const id = req.params.id;
+    const result = handleDeleteOperator(id)
+    if(result === 200) {
+        res.status(200).send("Operator deleted!");
+    } else {
+        res.status(500).send("SOmething wrong happened")
+    }/* TODO 404 status for operator not found */
+});
 
   
 app.listen(port, () => {
