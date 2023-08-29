@@ -7,7 +7,8 @@ export const con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "password", /* TODO obviously to change, and not to be stored in a file stored in git */
-  database: "sita_exercise"
+  database: "sita_exercise",
+  multipleStatements: true
 });
 
 con.connect(function(err) {
@@ -27,10 +28,7 @@ app.get('/operators', (req, res) => {
 });
 
 app.get('/operators/:id', (req, res) => {
-    const id = req.params.id
-    const result = handleGetOperator(id)
-    res.status(200).send(result)
-    /* TODO 404 status for operator not found */
+    handleGetOperator(req.params.id, res)
 });
 
 app.post('/operators', (req, res) => {

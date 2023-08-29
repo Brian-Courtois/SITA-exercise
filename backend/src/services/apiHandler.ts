@@ -1,21 +1,15 @@
 import { IOperator } from "../data-models/operator";
-import { getAllOperatorsFromDatabase } from "./dataBase.helper";
+import { getAllOperatorsFromDatabase, getOperatorFromDatabase } from "./dataBase.helper";
 
 export async function handleGetOperators(res: any): Promise<string> {
     console.log('GET /operators')
     return getAllOperatorsFromDatabase(res)
 }
 
-export function handleGetOperator(id: string): string {
+export async function handleGetOperator(id: string, res: any): Promise<string> {
     /* TODO sanitize id */
-    console.log(`GET /operators/${id}`)
-    return "Sorry cannot find specific operator with id" + id
-    /* const operator = operators.find(op => op.id === id);
-    if (operator) {
-        res.json(operator);
-    } else {
-        res.status(404).json({ message: 'Operator not found' });
-    } */
+    console.log(`GET /operator/${id}`)
+    return getOperatorFromDatabase(id, res)
 }
 
 export function handlePostOperator(body: unknown): number {
