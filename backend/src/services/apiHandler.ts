@@ -1,8 +1,9 @@
 import { IOperator } from "../data-models/operator";
+import { getAllOperatorsFromDatabase } from "./dataBase.helper";
 
 export function handleGetOperators(): string {
     console.log('GET /operators')
-    return "Sorry no operators at the moment"
+    return getAllOperatorsFromDatabase()
 }
 
 export function handleGetOperator(id: string): string {

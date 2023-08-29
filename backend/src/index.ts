@@ -1,5 +1,19 @@
 import express from 'express';
 import { handleDeleteOperator, handleGetOperator, handleGetOperators, handlePostOperator, handlePutOperator } from './services/apiHandler';
+
+const mysql = require('mysql');
+
+export const con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "r&+R=?k8Nsj64&Nm" /* TOOD to change, not to be stored in a file stored in git */
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
 const app = express()
 const port = 3000
 
