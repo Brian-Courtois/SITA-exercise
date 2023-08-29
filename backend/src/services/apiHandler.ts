@@ -1,5 +1,5 @@
 import { IOperator } from "../data-models/operator";
-import { getAllOperatorsFromDatabase, getOperatorFromDatabase } from "./dataBase.helper";
+import { getAllOperatorsFromDatabase, getOperatorFromDatabase, postOperatorToDatabase } from "./dataBase.helper";
 
 export async function handleGetOperators(res: any): Promise<string> {
     console.log('GET /operators')
@@ -12,16 +12,18 @@ export async function handleGetOperator(id: string, res: any): Promise<string> {
     return getOperatorFromDatabase(id, res)
 }
 
-export function handlePostOperator(body: unknown): number {
-    console.log('POST /operators')
-    const newOperator: IOperator = body as IOperator; /* TODO Here sanitize body we need to make sure that the user is sending an operator */
-    return 200
+export async function handlePostOperator(body: unknown, res: any): Promise<string> {
+    /* TODO Here sanitize body we need to make sure that the user is sending an operator */
+    console.log('POST /operators ' + body)
+    const newOperator: IOperator = body as IOperator;
+    return postOperatorToDatabase(newOperator, res)
 }
 
 export function handlePutOperator(id: string, body: unknown): number {
     /* TODO sanitize id */
+    /* TODO Here sanitize body we need to make sure that the user is sending an operator */
     console.log(`PUT /operators/${id}`)
-    const modifiedOperator: IOperator = body as IOperator; /* TODO Here sanitize body we need to make sure that the user is sending an operator */
+    const modifiedOperator: IOperator = body as IOperator;
     return 200
     /* const index = operators.findIndex(op => op.id === id);
     if (index !== -1) {

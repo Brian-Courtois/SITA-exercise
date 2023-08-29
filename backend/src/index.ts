@@ -17,6 +17,7 @@ con.connect(function(err) {
 });
 
 const app = express()
+app.use(express.json());
 const port = 3000
 
 app.get('/', (req, res) => {
@@ -32,13 +33,7 @@ app.get('/operators/:id', (req, res) => {
 });
 
 app.post('/operators', (req, res) => {
-    console.log('POST /operators');
-    const result = handlePostOperator(req.body)
-    if( result === 201) {
-        res.status(201).send("Operator created!");
-    } else {
-        res.status(500).send("SOmething wrong happened")
-    }
+    handlePostOperator(req.body, res)
 });
 
 app.put('/operators/:id', (req, res) => {
