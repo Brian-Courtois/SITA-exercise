@@ -1,9 +1,9 @@
 import { IOperator } from "../data-models/operator";
 import { getAllOperatorsFromDatabase } from "./dataBase.helper";
 
-export function handleGetOperators(): string {
+export async function handleGetOperators(res: any): Promise<string> {
     console.log('GET /operators')
-    return getAllOperatorsFromDatabase()
+    return getAllOperatorsFromDatabase(res)
 }
 
 export function handleGetOperator(id: string): string {

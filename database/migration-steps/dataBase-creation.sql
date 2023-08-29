@@ -1,4 +1,4 @@
-CREATE DATABASE sita_exercise;
+/* CREATE DATABASE sita_exercise; */
 
 USE sita_exercise;
 

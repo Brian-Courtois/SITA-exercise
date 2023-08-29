@@ -6,7 +6,8 @@ const mysql = require('mysql');
 export const con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "r&+R=?k8Nsj64&Nm" /* TOOD to change, not to be stored in a file stored in git */
+  password: "password", /* TODO obviously to change, and not to be stored in a file stored in git */
+  database: "sita_exercise"
 });
 
 con.connect(function(err) {
@@ -22,8 +23,7 @@ app.get('/', (req, res) => {
   });/* TODO remove */
 
 app.get('/operators', (req, res) => {
-    const result = handleGetOperators()
-    res.status(200).send(result)
+    handleGetOperators(res)
 });
 
 app.get('/operators/:id', (req, res) => {
