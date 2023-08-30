@@ -11,6 +11,14 @@ export const con = mysql.createConnection({
   multipleStatements: true
 });
 
+export const pool = mysql.createPool({
+  host: "localhost",
+  user: "root",
+  password: "password", /* TODO obviously to change, and not to be stored in a file stored in git */
+  database: "sita_exercise",
+  connectionLimit: 100
+});
+
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");

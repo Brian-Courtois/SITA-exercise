@@ -1,4 +1,4 @@
-import { con } from "..";
+import { con, pool } from "..";
 import { IOperator } from "../data-models/operator";
 
 export async function getAllOperatorsFromDatabase(res: any): Promise<string> {
@@ -42,53 +42,88 @@ export async function getOperatorFromDatabase(id: string, res: any): Promise<str
     });
 }
 
-export async function postOperatorToDatabase(newOperator: IOperator, res: any): Promise<string> {
-    return con.query(`
-    -- Inserting a new address
-    INSERT INTO adress (streetNumber, streetName, cityName, postalCode, country)
-    VALUES (` + newOperator.adress.streetNumber + `,
-            '`+ newOperator.adress.streetName +`',
-            '`+ newOperator.adress.cityName +`',
-            ` + newOperator.adress.postalCode + `,
-            '`+ newOperator.adress.country +`'
-    );
-    
-    -- Getting the ID of the newly inserted address
-    SET @newAddressId = LAST_INSERT_ID();
-    
-    -- Inserting a new operator with the new address
-    INSERT INTO operators (name, description, adress_id)
-    VALUES ('`+ newOperator.name +`',
-            '`+ newOperator.description +`',
-            @newAddressId);
-            
-    SELECT LAST_INSERT_ID();
-    `
-    ,
-     function (err, result, fields) {
-        if (err) throw err;
-        const newOperatorId = result[3]
-        console.log('newOperatorId= ' + newOperatorId)
+export async function postOperatorToDatabase(newOperator: IOperator, res: any): Promise<void> {
+    try {
+        // Query the database for the first query
+        const firstQueryResult = await queryDatabase(`
+        -- Inserting a new address
+        INSERT INTO adress (streetNumber, streetName, cityName, postalCode, country)
+        VALUES (` + newOperator.adress.streetNumber + `,
+                '`+ newOperator.adress.streetName +`',
+                '`+ newOperator.adress.cityName +`',
+                ` + newOperator.adress.postalCode + `,
+                '`+ newOperator.adress.country +`'
+        );
         
-        addVehicleTypesToOperator(newOperator, newOperatorId).then(() => res.status(200).json(result))
-    })
+        -- Getting the ID of the newly inserted address
+        SET @newAddressId = LAST_INSERT_ID();
+        
+        -- Inserting a new operator with the new address
+        INSERT INTO operators (name, description, adress_id)
+        VALUES ('`+ newOperator.name +`',
+                '`+ newOperator.description +`',
+                @newAddressId);
+                
+        SELECT LAST_INSERT_ID();
+        `) as any;
+        const newOperatorId = firstQueryResult[firstQueryResult.length - 1][0]['LAST_INSERT_ID()']
+    
+        // Use the result of the first query for the second query
+        await addVehicleTypesToOperator(newOperator, newOperatorId)
+    
+        res.status(200).json({ message: 'Success: added operator with id: ' + newOperatorId});
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
 }
 
-function addVehicleTypesToOperator(newOperator: IOperator, newOperatorId: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-
-        for (let vehicleType in newOperator.supportedVehicleTypes) {
-            con.query(`INSERT INTO operatorsVehicleTypes (operator_id, vehicleType_id) VALUES
-            (
-                '` + newOperatorId + `',
-                '` + vehicleType + `'
-            );`,
-            (err, results, fields) => {
-            if (err) reject(err)
-          })
-        }
-  
-      // resolve promise after loop completes
-      resolve('success');
-      })
+async function addVehicleTypesToOperator(newOperator: IOperator, newOperatorId: string): Promise<void> {
+    try {
+        const promises = [];
+    
+        // Loop through the array
+        newOperator.supportedVehicleTypes.forEach((vehicleType) => {
+              const query = `INSERT INTO operatorsVehicleTypes (operator_id, vehicleType_id) VALUES
+              (
+                  '` + newOperatorId + `',
+                  '` + vehicleType + `'
+              );`;
+              const promise = performQueryInPool(query);
+              promises.push(promise);
+            }) 
+    
+        // Wait for all queries to finish
+        await Promise.all(promises);
+    
+        // Send a 200 OK response
+      } catch (error) {
+        // Handle errors here
+        console.error('Error:', error);
+        throw error;
+      }
     }
+
+function queryDatabase(query) {
+    return new Promise((resolve, reject) => {
+        con.query(query, (error, results) => {
+        if (error) {
+            reject(error);
+        } else {
+            resolve(results);
+        }
+        });
+    });
+}
+
+function performQueryInPool(query) {
+    return new Promise((resolve, reject) => {
+      pool.query(query, (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+}

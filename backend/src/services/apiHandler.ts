@@ -12,11 +12,12 @@ export async function handleGetOperator(id: string, res: any): Promise<string> {
     return getOperatorFromDatabase(id, res)
 }
 
-export async function handlePostOperator(body: unknown, res: any): Promise<string> {
+export function handlePostOperator(body: unknown, res: any): void {
     /* TODO Here sanitize body we need to make sure that the user is sending an operator */
-    console.log('POST /operators ' + body)
+    console.log('POST /operators with value: ')
+    console.log(body)
     const newOperator: IOperator = body as IOperator;
-    return postOperatorToDatabase(newOperator, res)
+    postOperatorToDatabase(newOperator, res)
 }
 
 export function handlePutOperator(id: string, body: unknown): number {
