@@ -1,6 +1,8 @@
 import { IOperator } from "../data-models/operator";
-import { getAllOperatorsFromDatabase, getOperatorFromDatabase, postOperatorToDatabase } from "./dataBase.helper";
+import { deleteOperatorFromDatabase, getAllOperatorsFromDatabase, getOperatorFromDatabase, postOperatorToDatabase } from "./dataBase.helper";
 
+
+/* TODO make it so that all functions here returns the same type */
 export async function handleGetOperators(res: any): Promise<string> {
     console.log('GET /operators')
     return getAllOperatorsFromDatabase(res)
@@ -20,30 +22,15 @@ export function handlePostOperator(body: unknown, res: any): void {
     postOperatorToDatabase(newOperator, res)
 }
 
-export function handlePutOperator(id: string, body: unknown): number {
+export function handlePutOperator(id: string, body: unknown, res: any): void {
     /* TODO sanitize id */
     /* TODO Here sanitize body we need to make sure that the user is sending an operator */
     console.log(`PUT /operators/${id}`)
-    const modifiedOperator: IOperator = body as IOperator;
-    return 200
-    /* const index = operators.findIndex(op => op.id === id);
-    if (index !== -1) {
-        operators[index] = updatedOperator;
-        res.json(updatedOperator);
-    } else {
-        res.status(404).json({ message: 'Operator not found' });
-    } */
+    res.status(500).send("Not yet implemented")
 }
 
-export function handleDeleteOperator(id: string): number {
+export function handleDeleteOperator(id: string, res: any): Promise<void> {
     /* TODO sanitize id */
     console.log(`DELETE /operators/${id}`)
-    return 200
-    /* const index = operators.findIndex(op => op.id === id);
-    if (index !== -1) {
-        operators.splice(index, 1);
-        res.json({ message: 'Operator deleted' });
-    } else {
-        res.status(404).json({ message: 'Operator not found' });
-    } */
+    return deleteOperatorFromDatabase(id, res)
 }

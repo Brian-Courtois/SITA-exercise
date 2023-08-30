@@ -28,40 +28,29 @@ const app = express()
 app.use(express.json());
 const port = 3000
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  });/* TODO remove */
-
+/* TODO API documentation --> Swagger ? */
 app.get('/operators', (req, res) => {
     handleGetOperators(res)
 });
 
+/* TODO API documentation --> Swagger ? */
 app.get('/operators/:id', (req, res) => {
     handleGetOperator(req.params.id, res)
 });
 
+/* TODO API documentation --> Swagger ? */
 app.post('/operators', (req, res) => {
     handlePostOperator(req.body, res)
 });
 
+/* TODO API documentation --> Swagger ? */
 app.put('/operators/:id', (req, res) => {
-    const id = req.params.id
-    const result = handlePutOperator(id, req.body)
-    if(result === 200) {
-        res.status(200).send("Operator modified!");
-    } else {
-        res.status(500).send("SOmething wrong happened")
-    }/* TODO 404 status for operator not found */
+    handlePutOperator(req.params.id, req.body, res)
 });
 
+/* TODO API documentation --> Swagger ? */
 app.delete('/operators/:id', (req, res) => {
-    const id = req.params.id;
-    const result = handleDeleteOperator(id)
-    if(result === 200) {
-        res.status(200).send("Operator deleted!");
-    } else {
-        res.status(500).send("SOmething wrong happened")
-    }/* TODO 404 status for operator not found */
+    handleDeleteOperator(req.params.id, res)
 });
 
   

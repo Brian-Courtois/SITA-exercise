@@ -32,8 +32,6 @@ export async function getOperatorFromDatabase(id: string, res: any): Promise<str
         
         function (err, result, fields) {
         if (err) throw err;
-        console.log(result[0]);
-        console.log(result[1]);
         if(result[0].length === 0) {
             res.status(404).send('Unknown operator id')
         } else {
@@ -69,7 +67,7 @@ export async function postOperatorToDatabase(newOperator: IOperator, res: any): 
         const newOperatorId = firstQueryResult[firstQueryResult.length - 1][0]['LAST_INSERT_ID()']
     
         // Use the result of the first query for the second query
-        await addVehicleTypesToOperator(newOperator, newOperatorId)
+        await addVehicleTypesToOperatorInDatabase(newOperator, newOperatorId)
     
         res.status(200).json({ message: 'Success: added operator with id: ' + newOperatorId});
       } catch (error) {
@@ -78,7 +76,25 @@ export async function postOperatorToDatabase(newOperator: IOperator, res: any): 
       }
 }
 
-async function addVehicleTypesToOperator(newOperator: IOperator, newOperatorId: string): Promise<void> {
+export async function deleteOperatorFromDatabase(id: string, res: any): Promise<void> {
+    /* TODO I did not took the time to properly clean the adress table */
+    return con.query(
+        `DELETE FROM operatorsVehicleTypes
+        WHERE operator_id = '` + id + `';
+    
+        DELETE FROM operators
+        WHERE id = '` + id + `'; `,
+            
+            function (err, result, fields) {
+            if (err) throw err;
+            if(result[0].length === 0) {
+                res.status(404).send('Unknown operator id')
+            } else {
+                res.status(200).send('Operator with id: ' + id + ' deleted successfully')
+            }})
+}
+
+async function addVehicleTypesToOperatorInDatabase(newOperator: IOperator, newOperatorId: string): Promise<void> {
     try {
         const promises = [];
     
